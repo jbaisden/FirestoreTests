@@ -29,19 +29,19 @@ export class AppComponent implements OnInit {
     console.log(this.todos$);
   }
 
-  collection$(path, query?) {
-    return this.afs
-      .collection(path)
-      .snapshotChanges()
-      .pipe(
-        map(actions => {
-          return actions.map(a => {
-            const data: Object = a.payload.doc.data();
-            const id = a.payload.doc.id;
-            return { id, ...data };
-          });
-        })
-      );
-  }
+  // collection$(path, query?) {
+  //   return this.afs
+  //     .collection(path)
+  //     .snapshotChanges()
+  //     .pipe(
+  //       map(actions => {
+  //         return actions.map(a => {
+  //           const data: Object = a.payload.doc.data();
+  //           const id = a.payload.doc.id;
+  //           return { id, ...data };
+  //         });
+  //       })
+  //     );
+  // }
 
 } //end class
