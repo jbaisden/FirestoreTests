@@ -8,53 +8,70 @@ import { Observable } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-
 export class AppComponent implements OnInit {
   constructor(private afs: AngularFirestore) { }
   title = 'FirestoreTests';
-  todos$: Observable<any>;
-  collection: AngularFirestoreCollection<any>;
+  // todos$: Observable<any>;
+  tasks$: Observable<Array<Task>>;
+  tasks: Array<any>;
+  // collection: AngularFirestoreCollection<any>;
 
   ngOnInit() {
-    this.loadTodo2();
+    // this.subscribeGetTasks();
+    this.loadTodo1();
   }
 
+  subscribeGetTasks() {
+    this.getTasks().subscribe(result => {
+      this.tasks = result.map(changeAction => {
+        const t: Task = changeAction.payload.doc.data() as Task;
+        t.docId = changeAction.payload.doc.id;
+        return t;
+      })
+    });
+  }
 
-  loadTodo2() {
-    this.collection = this.afs.collection('tasks');
-    console.warn(this.collection);
-    this.todos$ = this.collection.valueChanges();
+  getTasks() {
+    return this.afs.collection('tasks').snapshotChanges();
+    // return new Promise<any>((resolve, reject) => {
+    //   this.afs.collection('/tasks').snapshotChanges()
+    //     .subscribe(snapshots => {
+    //       resolve(snapshots)
+    //     })
+    // })
   }
 
   loadTodo1() {
-    this.todos$ = this.afs
+    this.tasks$ = this.afs
       .collection('tasks')
       .snapshotChanges()
       .pipe(
         map(actions => {
           return actions.map(a => {
-            const data: Object = a.payload.doc.data();
-            const id = a.payload.doc.id;
-            return { id, ...data };
+            const t: Task = a.payload.doc.data() as Task;
+            t.docId = a.payload.doc.id;
+            return t;
           });
         })
       );
   }
 
-  // collection$(path, query?) {
-  //   return this.afs
-  //     .collection(path)
-  //     .snapshotChanges()
-  //     .pipe(
-  //       map(actions => {
-  //         return actions.map(a => {
-  //           const data: Object = a.payload.doc.data();
-  //           const id = a.payload.doc.id;
-  //           return { id, ...data };
-  //         });
-  //       })
-  //     );
-  // }
+  addTask(task: string) {
+    this.afs.collection('tasks').add({ description: task });
+  }
+
+  loadTodo2() {
+    // this.collection = this.afs.collection('tasks');
+    // console.warn(this.collection);
+    // this.tasks$ = this.collection.valueChanges();
+  }
 
 } //end class
 
+
+interface Task {
+  description: string;
+  docId: string;
+  name: string;
+  email: string;
+}
