@@ -16,11 +16,11 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireFunctionsModule,
     AngularFireMessagingModule,
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

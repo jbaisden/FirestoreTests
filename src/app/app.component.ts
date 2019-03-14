@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
   constructor(private afs: AngularFirestore) { }
   title = 'FirestoreTests';
   todos$: Observable<any>;
+  doc:Observable<Task>;
   collection: AngularFirestoreCollection<any>;
 
   ngOnInit() {
@@ -24,7 +25,11 @@ export class AppComponent implements OnInit {
     this.collection = this.afs.collection('tasks');
     console.warn(this.collection);
     this.todos$ = this.collection.valueChanges();
+
+    this.doc = this.afs.collection('tasks').doc<Task>('NDlNV4BqsohAlBNyprFy').ref.get();
+    console.warn(this.doc);
   }
+
 
   loadTodo1() {
     this.todos$ = this.afs
@@ -33,28 +38,19 @@ export class AppComponent implements OnInit {
       .pipe(
         map(actions => {
           return actions.map(a => {
-            const data: Object = a.payload.doc.data();
+            const data: object = a.payload.doc.data();
             const id = a.payload.doc.id;
+            console.log(id);
+            console.log(data);
             return { id, ...data };
           });
         })
       );
   }
 
-  // collection$(path, query?) {
-  //   return this.afs
-  //     .collection(path)
-  //     .snapshotChanges()
-  //     .pipe(
-  //       map(actions => {
-  //         return actions.map(a => {
-  //           const data: Object = a.payload.doc.data();
-  //           const id = a.payload.doc.id;
-  //           return { id, ...data };
-  //         });
-  //       })
-  //     );
-  // }
-
 } //end class
 
+interface Task {
+  id: string;
+  description: string;
+}
